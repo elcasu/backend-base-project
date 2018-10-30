@@ -1,5 +1,6 @@
 const execSQL = require('exec-sql')
 const path = require('path')
+require('dotenv').config({ path: `${__dirname}/../env.test` })
 
 module.exports.cleanDB = function(done) {
   execSQL.connect({
