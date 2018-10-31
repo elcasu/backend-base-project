@@ -4,7 +4,7 @@ var server = require('../../server')
 var ExampleModel = require('../../app/models/example')
 var utils = require('../utils')
 
-describe('Example Model', function() {
+describe('Example Handler', function() {
   before(function(done) {
     utils.cleanDB(function(){
       // Adding two intial examples
