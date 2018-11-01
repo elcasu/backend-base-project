@@ -1,7 +1,3 @@
-if (process.env.NODE_ENV !== 'test') {
-  require('dotenv').config()
-}
-
 var express = require('express');
 var cors = require('cors');
 var morgan = require('morgan');
@@ -29,7 +25,7 @@ routes.setup(app, handlers);
 // ---- START SERVER ----
 var server = app.listen(process.env.PORT, function(){
   if (process.env.NODE_ENV !== 'test') {
-    console.log("Server corriendo en el puerto", process.env.PORT);
+    console.log("Server corriendo en el puerto", (process.env.PORT || 8085));
   }
 })
 
