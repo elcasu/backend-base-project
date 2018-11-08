@@ -2,18 +2,15 @@ var request = require('supertest')
 var expect = require('chai').expect
 var server = require('../../server')
 var ExampleModel = require('../../app/models/example')
-var utils = require('../utils')
 
 describe('Example Handler', function() {
-  before(function(done) {
-    utils.cleanDB(function(){
-      // Adding two intial examples
-      ExampleModel.add({ field1: 'Example 1' }, function() {
-        ExampleModel.add({ field1: 'Example 2' }, function() {
-          done()
-        })
+  beforeEach(function(done) {
+    // Adding two intial examples
+    ExampleModel.add({ field1: 'Example 1' }, function() {
+      ExampleModel.add({ field1: 'Example 2' }, function() {
+        done()
       })
-    })    
+    })        
   })
 
   describe('GET /api/examples', function () {
