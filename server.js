@@ -15,9 +15,27 @@ if (process.env.NODE_ENV !== 'test') {
 // handle CORS requests
 app.use(cors())
 
+app.use(function (req, res, next) {
+  console.log('Middleware de Aplicación nro 1');
+  if (req.query.test){
+    req.testParam = true    
+  }
+  next();
+});
+
+app.use(function (req, res, next) {
+  if (req.testParam){
+    console.log('Existe el parametro "test"');
+  } else {
+    console.log('NO existe el parametro "test"');
+  }
+  next();
+});
+
 // Application routes
 var handlers = {
-  examples: require('./app/handlers/examplesHandler')
+  examples: require('./app/handlers/examplesHandler'),
+  users: require('./app/handlers/usersHandler')
 };
 
 routes.setup(app, handlers);
