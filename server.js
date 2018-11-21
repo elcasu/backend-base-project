@@ -1,7 +1,15 @@
+if (process.env.NODE_ENV === 'test') {
+  require('dotenv').config({ path: `${__dirname}/.env.test` })
+}
+else {
+  require('dotenv').config()
+}
+
 var express = require('express');
 var cors = require('cors');
 var morgan = require('morgan');
 var app = express();
+var mongoose = require('mongoose')
 var bodyParser = require('body-parser')
 var routes = require('./app/routes');
 
@@ -15,9 +23,15 @@ if (process.env.NODE_ENV !== 'test') {
 // handle CORS requests
 app.use(cors())
 
+// database connection
+if (!mongoose.connection.readyState) {
+  mongoose.Promise = global.Promise;
+  mongoose.connect(process.env.DATABASE, { useNewUrlParser: true });
+}
+
 // Application routes
 var handlers = {
-  examples: require('./app/handlers/examplesHandler')
+  users: require('./app/handlers/usersHandler')
 };
 
 routes.setup(app, handlers);

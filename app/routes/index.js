@@ -2,9 +2,9 @@ var express = require("express");
 
 function setup(app, handlers) {
 // ########## Example Routes ##########
-  var examplesRouter = express.Router();  
-  examplesRouter.get("/", handlers.examples.getList);
-  app.use("/api/examples", examplesRouter);
+  var usersRouter = express.Router();  
+  usersRouter.post("/", handlers.users.create);
+  app.use("/api/users", usersRouter);
 
 // ########## More Routes ##########
 

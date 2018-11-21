@@ -1,48 +1,40 @@
-const execSQL = require('exec-sql');
-const path = require('path');
-require('dotenv').config({path: `${__dirname}/../.env.test`});
+require('dotenv').config({ path: `${__dirname}/../.env.test` })
+const mongoose = require('mongoose');
+const asyncLib = require("async");
+const factories = require('./factories')
 
-before(function(done) {
-  cleanDB(function(){
-    done();
-  })   
+before((done) => {
+
+  const cleanDB = () => {
+    
+    // Remove all database documents and indexes
+    asyncLib.each(mongoose.connection.collections, (collection, callback) => {
+      collection.dropIndexes(callback);
+    }, () => {
+      asyncLib.each(mongoose.connection.models, (model, callback) => {
+        // Re-generate indexes
+        model.createIndexes(callback);
+      }, () => {
+        asyncLib.each(mongoose.connection.collections, (collection, callback) => {
+          collection.deleteMany(callback);
+        }, () => {
+          // Register factories
+          factories()
+          // Run tests
+          done();
+        });
+      });
+    });
+  }
+
+  // Connect to mongo and clean test database
+  mongoose.connect(process.env.DATABASE, { useNewUrlParser: true }, () => {
+    // Clean DB and regenerate indexes
+    cleanDB();
+  });
 });
 
-beforeEach(function(done) {
-  truncTables(function(){
-    done();
-  })   
+after((done) => {
+  mongoose.disconnect();
+  return done();
 });
-
-function connectToDB(){
-  execSQL.connect({
-    database: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    host: process.env.DB_HOST
-  });
-}
-
-function cleanDB(done) {
-  connectToDB();
-  execSQL.executeFile(path.join(__dirname, '../dbscripts/create-test-db.sql'), function(err) {
-    execSQL.disconnect();
-    if (err) {
-      console.log('************ ATENCION ************');
-      console.log(' Error while cleaning test DB:', err)
-    }
-    done();
-  });
-};
-
-function truncTables(done) {
-  connectToDB();  
-  execSQL.executeFile(path.join(__dirname, '../dbscripts/truncate-all-tables.sql'), function(err) {
-    execSQL.disconnect();
-    if (err) {
-      console.log('************ ATENCION ************');
-      console.log(' Error while truncating all tables: ', err)
-    }
-    done();
-  });
-};
